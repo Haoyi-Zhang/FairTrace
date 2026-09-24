@@ -1,0 +1,188 @@
+{
+  "address_space_limit_bytes": 3221225472,
+  "exclusions": "interactive development, literature reading, uninstrumented ad hoc checks, document compilation, and later clean replay",
+  "maximum_peak_rss_kib": 104872,
+  "per_stage": [
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 1.730424829,
+      "peak_rss_kib": 94504,
+      "stage": "annotated-composition",
+      "wall_seconds": 1.7317110300000422,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 0.9725277390000001,
+      "peak_rss_kib": 97448,
+      "stage": "annotated-expansions",
+      "wall_seconds": 0.9725779109999166,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 1.3011510130000001,
+      "peak_rss_kib": 100648,
+      "stage": "bisimulation",
+      "wall_seconds": 1.3012607030000254,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 0.0004518490000000597,
+      "peak_rss_kib": 100648,
+      "stage": "boundaries",
+      "wall_seconds": 0.0004583509999065427,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 2.959585492,
+      "peak_rss_kib": 96548,
+      "stage": "canonical-expansions",
+      "wall_seconds": 2.963296354000022,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 0.9693263480000001,
+      "peak_rss_kib": 100648,
+      "stage": "classify0",
+      "wall_seconds": 0.9693905260000975,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 2.6077951079999995,
+      "peak_rss_kib": 100648,
+      "stage": "classify1",
+      "wall_seconds": 2.608012599999938,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 4.5824514700000005,
+      "peak_rss_kib": 100648,
+      "stage": "classify2",
+      "wall_seconds": 4.582754539999996,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 7.098649363,
+      "peak_rss_kib": 100648,
+      "stage": "classify3",
+      "wall_seconds": 7.099967657999969,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 10.402989991000002,
+      "peak_rss_kib": 100648,
+      "stage": "classify4",
+      "wall_seconds": 10.403530524999951,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 1.0650013309999977,
+      "peak_rss_kib": 104872,
+      "stage": "composition",
+      "wall_seconds": 1.0650656200000412,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 0.393444401,
+      "peak_rss_kib": 95528,
+      "stage": "expansion",
+      "wall_seconds": 0.3934615890000259,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 0.7016610579999998,
+      "peak_rss_kib": 100648,
+      "stage": "graphs",
+      "wall_seconds": 0.7016982959999041,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 0.16477030699999995,
+      "peak_rss_kib": 95656,
+      "stage": "monitor",
+      "wall_seconds": 0.16477177399997345,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 0.03349344600000137,
+      "peak_rss_kib": 100648,
+      "stage": "public-budget",
+      "wall_seconds": 0.03351743700000043,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 5.0529289209999995,
+      "peak_rss_kib": 95528,
+      "stage": "regular-annotated",
+      "wall_seconds": 5.05993218499998,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 13.286185674,
+      "peak_rss_kib": 99240,
+      "stage": "regular-blocks",
+      "wall_seconds": 13.28966388799995,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 0.552185087,
+      "peak_rss_kib": 94884,
+      "stage": "regular-certificates",
+      "wall_seconds": 0.552730462999989,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 1.827418755,
+      "peak_rss_kib": 94376,
+      "stage": "regular-composition",
+      "wall_seconds": 1.8275669820000076,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 8.42629791,
+      "peak_rss_kib": 102692,
+      "stage": "regular-decisions",
+      "wall_seconds": 8.43949169099983,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 9.247385963,
+      "peak_rss_kib": 99116,
+      "stage": "regular-one-bit",
+      "wall_seconds": 9.250196844999891,
+      "workers": 1
+    },
+    {
+      "address_space_limit_bytes": 3221225472,
+      "cpu_seconds": 0.003314807999999836,
+      "peak_rss_kib": 100648,
+      "stage": "saturation",
+      "wall_seconds": 0.0033292990001427825,
+      "workers": 1
+    }
+  ],
+  "scope": "22-stage retained validation campaign; one process; per-stage peak RSS is a process high-water mark and is not summed",
+  "stages": 22,
+  "total_cpu_seconds": 73.379440863,
+  "total_wall_seconds": 73.4143862669996,
+  "workers": 1
+}

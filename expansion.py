@@ -25,6 +25,12 @@ class Edge:
 
 @dataclass(frozen=True)
 class TraceSystem:
+    """Finite labelled multigraph with stable edge identities.
+
+    Edge identity is its index in the immutable ``edges`` tuple.  Parallel
+    edges may have identical labels and endpoints; path APIs therefore use
+    edge indices rather than structural edge equality.
+    """
     states: int
     initial: int
     edges: tuple[Edge, ...]
@@ -34,8 +40,6 @@ class TraceSystem:
             raise ValueError('invalid state count')
         if type(self.initial) is not int or not 0 <= self.initial < self.states:
             raise ValueError('invalid initial state')
-        if len(set(self.edges)) != len(self.edges):
-            raise ValueError('duplicate edges are not supported')
         for edge in self.edges:
             if edge.source >= self.states or edge.target >= self.states:
                 raise ValueError('edge outside state space')
@@ -51,6 +55,8 @@ class Expanded:
     system: TraceSystem
     boundary: dict[tuple[int, int], int]
     chains: dict[tuple[int, int], tuple[int, ...]]
+    chain_edges: dict[tuple[int, int], tuple[int, ...]]
+    edge_owners: tuple[tuple[int, int, int], ...]
     edge_symbols: tuple[int, ...]
 
 
@@ -86,7 +92,9 @@ def canonical_expansion(source: TraceSystem, machine: Transducer,
         for q in range(machine.states):
             boundary[s, q] = state_count; state_count += 1
     target_edges: list[Edge] = []
+    edge_owners: list[tuple[int, int, int]] = []
     chains: dict[tuple[int, int], tuple[int, ...]] = {}
+    chain_edges: dict[tuple[int, int], tuple[int, ...]] = {}
     for q in range(machine.states):
         for edge_id, source_edge in enumerate(source.edges):
             transition = machine.step(q, symbols[edge_id])
@@ -99,12 +107,91 @@ def canonical_expansion(source: TraceSystem, machine: Transducer,
                     raise ValueError('expanded system exceeds state budget')
                 vertices.append(state_count); state_count += 1
             vertices.append(end)
+            target_ids = []
             for position, bit in enumerate(block):
                 low = source_edge.low if position == len(block) - 1 else ERASE
+                target_ids.append(len(target_edges))
                 target_edges.append(Edge(vertices[position], vertices[position + 1], bit, low))
+                edge_owners.append((q, edge_id, position))
             chains[q, edge_id] = tuple(vertices)
+            chain_edges[q, edge_id] = tuple(target_ids)
     target = TraceSystem(state_count, boundary[source.initial, machine.initial], tuple(target_edges))
-    return Expanded(target, boundary, chains, symbols)
+    return Expanded(target, boundary, chains, chain_edges, tuple(edge_owners), symbols)
+
+
+def expand_target_edge_path(expanded: Expanded, source: TraceSystem,
+                            machine: Transducer, edge_ids: tuple[int, ...],
+                            edge_symbols: tuple[int, ...] | None = None
+                            ) -> tuple[int, ...]:
+    """Expand a boundary-complete source edge path to target edge identities."""
+    symbols = _edge_symbols(
+        source, machine, expanded.edge_symbols if edge_symbols is None else edge_symbols)
+    if symbols != expanded.edge_symbols:
+        raise ValueError('edge-symbol annotations disagree with the expansion')
+    if not isinstance(edge_ids, tuple):
+        raise ValueError('source edge path must be a tuple of stable edge ids')
+    state = source.initial
+    q = machine.initial
+    current = expanded.system.initial
+    result: list[int] = []
+    for edge_id in edge_ids:
+        if type(edge_id) is not int or not 0 <= edge_id < len(source.edges):
+            raise ValueError('invalid source edge id')
+        source_edge = source.edges[edge_id]
+        if source_edge.source != state:
+            raise ValueError('edge sequence is not a source path')
+        chain = expanded.chain_edges[q, edge_id]
+        for target_edge_id in chain:
+            target_edge = expanded.system.edges[target_edge_id]
+            if target_edge.source != current:
+                raise AssertionError('stored target chain is not contiguous')
+            current = target_edge.target
+            result.append(target_edge_id)
+        transition = machine.step(q, symbols[edge_id])
+        state = source_edge.target
+        q = transition.next_state
+        if current != expanded.boundary[state, q]:
+            raise AssertionError('stored target chain has the wrong boundary endpoint')
+    return tuple(result)
+
+
+def decompose_target_edge_path(expanded: Expanded,
+                               target_edge_ids: tuple[int, ...]) -> tuple[int, ...]:
+    """Recover source edge identities from a complete expanded edge path.
+
+    The parser requires the complete target edge sequence.  Boundary states
+    alone are insufficient when parallel length-one chains share endpoints.
+    """
+    if not isinstance(target_edge_ids, tuple):
+        raise ValueError('target edge path must be a tuple of stable edge ids')
+    current = expanded.system.initial
+    cursor = 0
+    source_path: list[int] = []
+    while cursor < len(target_edge_ids):
+        target_edge_id = target_edge_ids[cursor]
+        if (type(target_edge_id) is not int or
+                not 0 <= target_edge_id < len(expanded.system.edges)):
+            raise ValueError('invalid target edge id')
+        first = expanded.system.edges[target_edge_id]
+        if first.source != current:
+            raise ValueError('target edge sequence is not a path from the initial state')
+        q, source_edge_id, position = expanded.edge_owners[target_edge_id]
+        if position != 0:
+            raise ValueError('target path starts inside an expansion chain')
+        chain = expanded.chain_edges[q, source_edge_id]
+        stop = cursor + len(chain)
+        if tuple(target_edge_ids[cursor:stop]) != chain:
+            raise ValueError('target path does not follow one complete identified chain')
+        for edge_id in chain:
+            edge = expanded.system.edges[edge_id]
+            if edge.source != current:
+                raise ValueError('target edge sequence is not contiguous')
+            current = edge.target
+        source_path.append(source_edge_id)
+        cursor = stop
+    if current not in expanded.boundary.values():
+        raise ValueError('target path ends inside an expansion chain')
+    return tuple(source_path)
 
 
 def erase(labels: tuple[int, ...]) -> tuple[int, ...]:

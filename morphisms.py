@@ -43,6 +43,37 @@ A lower endpoint greater than the upper endpoint denotes an empty interval.
     hi=min(d*(b+1)+p.prefix+p.suffix-1,d*(b-a+1)+p.prefix+t-1)
     return lo,hi
 
+def invalid_floor_all_miss(zero, one, source_bound, source_debt=0, target_debt=0):
+    """True invalid floor for a resetful zero-block and zero-free one-block.
+
+    The two candidate unfair words isolate the first overflowing source gap and
+    a later overflowing source gap.  Their target scores must still include the
+    baseline demands forced by internal gaps of ``zero``, by repeated adjacent
+    zero-blocks, and by the target initial debt.  The smaller candidate is the
+    semantic invalid floor, even when the exact-contract interval is empty.
+    """
+    u=word(zero); v=word(one)
+    for x,name in ((source_bound,'source bound'),(source_debt,'source debt'),
+                   (target_debt,'target debt')):
+        natural(x,name)
+    if source_debt>source_bound:
+        raise ValueError('source starts outside its bound')
+    if 0 not in u or 0 in v:
+        raise ValueError('invalid floor formula requires a reset block and an all-miss block')
+    prof=profile(u); d=len(v); b=source_bound; a=source_debt; t=target_debt
+    initial_overflow=max(
+        prof.internal,
+        prof.prefix+prof.suffix,
+        t+d*(b-a+1)+prof.prefix,
+    )
+    repeated_overflow=max(
+        prof.internal,
+        t+prof.prefix,
+        prof.suffix+d*(b+1)+prof.prefix,
+    )
+    return min(initial_overflow,repeated_overflow)
+
+
 def classifies(zero, one, source_bound, target_bound, source_debt=0, target_debt=0):
     """Whether phi^{-1}(L[target_bound,target_debt]) = L[source_bound,source_debt]."""
     u=word(zero); v=word(one)

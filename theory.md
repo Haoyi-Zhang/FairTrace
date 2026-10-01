@@ -200,7 +200,17 @@ max(m, dB+p+s, d(B-a)+p+t) <= C
 C <= min(d(B+1)+p+s-1, d(B-a+1)+p+t-1).
 ```
 
-Bounds zero and one have additional resetful-miss cases and are handled separately in the classifier. Canonical carried debt is `t = da+s`; a canonical target bound has the form `C = dB+p+s+slack` with `0 <= slack < d`, subject to the internal-gap gate. These formulas are a strict special case: a stateful or larger-alphabet expander may distinguish symbols with the same reset annotation and let their order influence later blocks.
+The semantic invalid floor must retain baseline demands even when this interval is empty.  It is
+
+```text
+R_init = max(m, p+s, t + d*(B-a+1) + p)
+R_int  = max(m, t+p, s + d*(B+1) + p)
+R      = min(R_init, R_int).
+```
+
+The first branch is attained by an initial violating gap, and the second by a violating gap after a reset.  Only under the nonempty-interval premises do the baseline terms become dominated and `R` simplify to one plus the smaller syntactic upper endpoint.  The identity map at `B=a=0,t=2` and `u=0110,v=1,B=a=t=0` both have true `R=2`, although that invalid simplification gives `1`; both exact intervals are empty.
+
+Bounds zero and one have additional resetful-miss cases and are handled separately in the classifier. Canonical carried debt is `t = da+s`; a canonical target bound has the form `C = dB+p+s+slack` with `0 <= slack < d`, subject to the internal-gap gate. These formulas are a strict special case: a stateful or larger-alphabet expander may distinguish symbols with the same reset annotation and emit different blocks while finite control is carried across source boundaries.
 
 ## 9. Canonical reactive microstep expansion
 
@@ -212,17 +222,17 @@ A finite source reactive system has states, an initial state, and edges carrying
 
 A tracked action induces the source reset annotation: reset when the action is disabled or served; miss when it is enabled and another action is selected.
 
-The canonical expansion creates boundary states `[v,q]` consisting of a source state and transducer control. Selecting a source edge at a boundary computes the block emitted by `T(q,sigma)` and creates a deterministic chain of that many target microsteps. The first `k-1` microsteps carry low erasure; the last carries the source low label and ends at `[v',q']`.
+The canonical expansion creates boundary states `[v,q]` consisting of a source state and transducer control. Selecting a source edge at a boundary computes the block emitted by `T(q,sigma)` and creates a deterministic chain of that many target microsteps. Parallel source edges are retained by stable edge identity, and every generated target edge records its source-edge identity and chain position. The first `k-1` microsteps carry low erasure; the last carries the source low label and ends at `[v',q']`.
 
 ### Run bijection
 
-Every source edge determines exactly one nonempty target chain. Every intermediate state has exactly one successor and belongs to exactly one chain. Consequently:
+Every source edge identity determines exactly one nonempty target chain. Every intermediate state has exactly one successor and belongs to exactly one identified chain. Consequently:
 
-- expanding source edges gives one infinite target run;
+- expanding identified source edges gives one infinite target edge run;
 - every infinite target run visits boundary states infinitely often (chains are finite and nonempty);
-- factoring between boundaries recovers a unique source run.
+- parsing the complete target edge sequence by chain identity recovers a unique source edge run.
 
-These two operations are inverse. For every finite prefix, the target reset word is exactly the transducer output on the source operation-class word, and erasing target `epsilon` labels yields exactly the source low sequence.
+These two operations are inverse. Boundary-state pairs alone are not a unique code: in a one-state identity expansion, distinct reset-zero and reset-one self-loops yield the same constant boundary-state sequence but different edge runs. For every finite prefix, the target reset word is exactly the transducer output on the source operation-class word, and erasing target `epsilon` labels yields exactly the source low sequence.
 
 If `(B,a,C,t,T)` is an exact word contract, the run bijection restricts to a bijection between source-fair and target-fair runs. Paired runs have identical low observations. Therefore their fair observation sets are equal.
 
@@ -239,7 +249,7 @@ Equality of fair observation sets preserves:
 
 The theorem does **not** preserve predicates about exact target microstep positions, physical time, or instruction cost. It does not synthesize a scheduler strategy: a strategy theorem would require a game model and an account of the histories visible to each player.
 
-For several obligations, one expanded run may carry a vector of reset bits. Coordinatewise exact contracts can then be conjoined because all coordinates refer to the same chain and boundary factorization. Expanding coordinates independently with different chains would not prove simultaneous fairness.
+For several obligations, one expanded run may carry a vector of reset bits. Coordinatewise exact contracts are a sufficient condition because all coordinates refer to the same chain and boundary factorization. The converse fails: equality of an intersection does not imply equality of each factor. With two source coordinates both equal to `L(1,0)`, vector output `(0,x)`, and target bounds `(0,1)` at zero debt, the vector contract is exact while its first scalar contract is not. Expanding coordinates independently with different chains would not prove simultaneous fairness.
 
 ## 10. Worked stateful contract
 
@@ -264,7 +274,7 @@ The one-symbol fair prefix `r` emits `110`, reaching target debt three before re
 011 110 110 01 (01)^omega,
 ```
 
-whose maximum target debt from one is four. The target-safe product at `C=3` has no live overflow vertex, so `R=4`. This example cannot be represented by a morphism of the reset bit alone because `m` and `n` share annotation one but emit different blocks and change later control.
+whose maximum target debt from one is four. The target-safe product at `C=3` has no live overflow vertex, so `R=4`. This example cannot be represented by a morphism of the reset bit alone because `m` and `n` share annotation one but emit different blocks. In either control state they have the same next state (`A` to `B`, and `B` to `A`), so substituting one class for the other leaves the control trajectory unchanged; only the block emitted at `A` changes.
 
 ## 11. Evidence and limitations
 

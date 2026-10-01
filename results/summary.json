@@ -1,6 +1,7 @@
 {
   "annotated-composition": {
     "binary_second_transducers": 16,
+    "comparison_scope": "emitted output words only; final control-state ids are not compared",
     "exact_composite_contracts": 99,
     "feasible_first_contracts": 208,
     "feasible_second_contracts": 99,
@@ -54,11 +55,14 @@
       "zero_without_reset": 0
     },
     "exact_equalities": 192,
+    "invalid_floor_formula_checks": 132,
+    "invalid_floor_lasso_witnesses": 132,
     "maximum_block_length": 3,
     "maximum_reachable_vertices": 36,
     "mismatches": 0,
+    "reflection_threshold_checks": 264,
     "regular_interval_checks": 29988,
-    "scope": "entire omega language per finite configuration; closed form, interval synthesis and product oracle",
+    "scope": "entire omega language per finite configuration; closed form, interval synthesis and product oracle; direct R-1/R reflection checks for resetful/all-miss blocks",
     "source_bound": 0,
     "target_bound_max": 16
   },
@@ -71,11 +75,14 @@
       "zero_without_reset": 0
     },
     "exact_equalities": 285,
+    "invalid_floor_formula_checks": 264,
+    "invalid_floor_lasso_witnesses": 264,
     "maximum_block_length": 3,
     "maximum_reachable_vertices": 51,
     "mismatches": 0,
+    "reflection_threshold_checks": 528,
     "regular_interval_checks": 59976,
-    "scope": "entire omega language per finite configuration; closed form, interval synthesis and product oracle",
+    "scope": "entire omega language per finite configuration; closed form, interval synthesis and product oracle; direct R-1/R reflection checks for resetful/all-miss blocks",
     "source_bound": 1,
     "target_bound_max": 16
   },
@@ -88,11 +95,14 @@
       "zero_without_reset": 0
     },
     "exact_equalities": 431,
+    "invalid_floor_formula_checks": 396,
+    "invalid_floor_lasso_witnesses": 396,
     "maximum_block_length": 3,
     "maximum_reachable_vertices": 66,
     "mismatches": 0,
+    "reflection_threshold_checks": 792,
     "regular_interval_checks": 89964,
-    "scope": "entire omega language per finite configuration; closed form, interval synthesis and product oracle",
+    "scope": "entire omega language per finite configuration; closed form, interval synthesis and product oracle; direct R-1/R reflection checks for resetful/all-miss blocks",
     "source_bound": 2,
     "target_bound_max": 16
   },
@@ -105,11 +115,14 @@
       "zero_without_reset": 0
     },
     "exact_equalities": 585,
+    "invalid_floor_formula_checks": 528,
+    "invalid_floor_lasso_witnesses": 528,
     "maximum_block_length": 3,
     "maximum_reachable_vertices": 80,
     "mismatches": 0,
+    "reflection_threshold_checks": 1056,
     "regular_interval_checks": 119952,
-    "scope": "entire omega language per finite configuration; closed form, interval synthesis and product oracle",
+    "scope": "entire omega language per finite configuration; closed form, interval synthesis and product oracle; direct R-1/R reflection checks for resetful/all-miss blocks",
     "source_bound": 3,
     "target_bound_max": 16
   },
@@ -122,11 +135,14 @@
       "zero_without_reset": 0
     },
     "exact_equalities": 739,
+    "invalid_floor_formula_checks": 660,
+    "invalid_floor_lasso_witnesses": 660,
     "maximum_block_length": 3,
     "maximum_reachable_vertices": 93,
     "mismatches": 0,
+    "reflection_threshold_checks": 1320,
     "regular_interval_checks": 149940,
-    "scope": "entire omega language per finite configuration; closed form, interval synthesis and product oracle",
+    "scope": "entire omega language per finite configuration; closed form, interval synthesis and product oracle; direct R-1/R reflection checks for resetful/all-miss blocks",
     "source_bound": 4,
     "target_bound_max": 16
   },
@@ -224,6 +240,7 @@
     ]
   },
   "regular-composition": {
+    "comparison_scope": "emitted output words only; final control-state ids are not compared",
     "exact_composite_contracts": 485,
     "feasible_first_contracts": 976,
     "feasible_second_contracts": 485,

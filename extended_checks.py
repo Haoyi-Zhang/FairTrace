@@ -6,6 +6,8 @@ from pathlib import Path
 import morphisms as m
 import omega_oracle as oracle
 import regular_contracts as regular
+import contract_oracle as fixed_oracle
+import contract_decisions as decisions
 import transducers
 from reference import words_up_to
 
@@ -14,9 +16,9 @@ def word_string(w): return ''.join(map(str,w))
 
 
 def classify(bound, out, write_csv):
-    words=words_up_to(3); rows=[]; total=exact=maximum=0; mismatches=[]
+    words=words_up_to(3); rows=[]; floor_rows=[]; total=exact=maximum=0; mismatches=[]
     by_kind={'zero_without_reset':0,'pure_miss_one':0,'resetful_one':0}
-    interval_checks = 0
+    interval_checks = floor_checks = reflection_checks = floor_witnesses = 0
     for u,v in it.product(words,repeat=2):
         cases=equalities=peak=0
         machine = transducers.morphism(u, v)
@@ -36,6 +38,57 @@ def classify(bound, out, write_csv):
                         mismatches.append(dict(u=u,v=v,b=bound,c=c,a=a,t=t,
                                                predicted=predicted,synthesized=synthesized,
                                                oracle=answer,directions=directions))
+        if 0 in u and 0 not in v:
+            for a in range(bound+1):
+                # Fixed t=0..3 includes legal and temporarily over-budget
+                # target initial debts.  The latter are important because the
+                # semantic floor is defined before choosing C.
+                for t in range(4):
+                    predicted_floor=m.invalid_floor_all_miss(u,v,bound,a,t)
+                    synthesized_floor=regular.invalid_floor(machine,bound,a,t)
+                    assert synthesized_floor.value==predicted_floor
+                    assert predicted_floor>=1
+                    before=fixed_oracle.equivalent(
+                        machine,bound,predicted_floor-1,a,t)
+                    at=fixed_oracle.equivalent(
+                        machine,bound,predicted_floor,a,t)
+                    assert not before.target_not_source
+                    assert at.target_not_source
+                    assert regular.invalid_safe_lasso(
+                        machine,bound,a,predicted_floor-1,t) is None
+                    lasso=regular.invalid_safe_lasso(
+                        machine,bound,a,predicted_floor,t)
+                    assert lasso is not None
+                    packet={
+                        'schema': decisions.SCHEMA,
+                        'transducer': machine.to_json(),
+                        'parameters': {
+                            'source_bound': bound,
+                            'target_bound': predicted_floor,
+                            'source_debt': a,
+                            'target_debt': t,
+                        },
+                        'verdict': 'inexact',
+                        'direction': 'source-invalid-target-valid',
+                        'prefix': list(lasso.prefix),
+                        'loop': list(lasso.loop),
+                    }
+                    assert decisions.check(packet)
+                    floor_checks += 1
+                    reflection_checks += 2
+                    floor_witnesses += 1
+                    floor_rows.append(dict(
+                        zero=word_string(u), one=word_string(v), source_bound=bound,
+                        source_debt=a, target_debt=t,
+                        invalid_floor=predicted_floor,
+                        below_bound=predicted_floor-1,
+                        below_reflection_failure=int(before.target_not_source),
+                        at_reflection_failure=int(at.target_not_source),
+                        witness_prefix=word_string(lasso.prefix),
+                        witness_loop=word_string(lasso.loop),
+                        witness_checked=1,
+                    ))
+
         kind=('zero_without_reset' if 0 not in u else
               'pure_miss_one' if 0 not in v else 'resetful_one')
         by_kind[kind]+=equalities
@@ -44,6 +97,7 @@ def classify(bound, out, write_csv):
                          maximum_reachable_vertices=peak,kind=kind))
         total+=cases; exact+=equalities; maximum=max(maximum,peak)
     write_csv(out/f'classify-{bound}.csv',rows)
+    write_csv(out/f'stateless-floor-{bound}.csv',floor_rows)
     if mismatches:
         (out/f'classify-{bound}-mismatches.json').write_text(json.dumps(mismatches,indent=2)+'\n')
         raise AssertionError(f'{len(mismatches)} classification mismatches')
@@ -51,7 +105,10 @@ def classify(bound, out, write_csv):
                 maximum_reachable_vertices=maximum,equalities_by_kind=by_kind,
                 maximum_block_length=3,source_bound=bound,target_bound_max=16,
                 mismatches=0,regular_interval_checks=interval_checks,
-                scope='entire omega language per finite configuration; closed form, interval synthesis and product oracle')
+                invalid_floor_formula_checks=floor_checks,
+                reflection_threshold_checks=reflection_checks,
+                invalid_floor_lasso_witnesses=floor_witnesses,
+                scope='entire omega language per finite configuration; closed form, interval synthesis and product oracle; direct R-1/R reflection checks for resetful/all-miss blocks')
 
 
 def public_budget(out,write_csv):

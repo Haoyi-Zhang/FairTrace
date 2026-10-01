@@ -125,6 +125,66 @@ class MorphismTests(unittest.TestCase):
         with self.assertRaises(ValueError): m.uniform_public_budget((),1)
         for vals in (((0,),(True,),1,1),((0,),(1,),True,1),((0,),(1,),1,129)):
             with self.assertRaises(ValueError): o.equivalent(*vals)
+    def test_true_invalid_floor_includes_baseline_demands(self):
+        cases = (
+            ((0,), (1,), 0, 0, 2, 2),
+            ((0, 1, 1, 0), (1,), 0, 0, 0, 2),
+        )
+        for u, v, bound, debt, target_debt, expected_floor in cases:
+            machine = tr.morphism(u, v)
+            self.assertEqual(
+                m.invalid_floor_all_miss(u, v, bound, debt, target_debt),
+                expected_floor,
+            )
+            floor = rc.invalid_floor(machine, bound, debt, target_debt)
+            self.assertEqual(floor.value, expected_floor)
+            before = co.equivalent(
+                machine, bound, expected_floor - 1, debt, target_debt)
+            at = co.equivalent(
+                machine, bound, expected_floor, debt, target_debt)
+            self.assertFalse(before.target_not_source)
+            self.assertTrue(at.target_not_source)
+            self.assertIsNone(rc.invalid_safe_lasso(
+                machine, bound, debt, expected_floor - 1, target_debt))
+            witness = rc.invalid_safe_lasso(
+                machine, bound, debt, expected_floor, target_debt)
+            self.assertIsNotNone(witness)
+            assert witness is not None
+            packet = {
+                'schema': cd.SCHEMA,
+                'transducer': machine.to_json(),
+                'parameters': {
+                    'source_bound': bound,
+                    'target_bound': expected_floor,
+                    'source_debt': debt,
+                    'target_debt': target_debt,
+                },
+                'verdict': 'inexact',
+                'direction': 'source-invalid-target-valid',
+                'prefix': list(witness.prefix),
+                'loop': list(witness.loop),
+            }
+            self.assertTrue(cd.check(packet))
+
+    def test_vector_exactness_need_not_be_coordinatewise_necessary(self):
+        # Both source coordinates are L(1,0).  The first target coordinate
+        # emits 0 on either source symbol and is therefore universal at C=0;
+        # the second is the identity at C=1.  Their conjunction is exactly
+        # L(1,0), even though the first scalar contract is not exact.
+        self.assertFalse(m.classifies((0,), (0,), 1, 0))
+        self.assertTrue(m.classifies((0,), (1,), 1, 1))
+        self.assertFalse(o.equivalent((0,), (0,), 1, 0)[0])
+        self.assertTrue(o.equivalent((0,), (1,), 1, 1)[0])
+        for source_debt in range(3):
+            for bit in (0, 1):
+                next_source = 2 if source_debt == 2 else (0 if bit == 0 else min(2, source_debt + 1))
+                first_target = 0  # output coordinate is always reset
+                second_target = next_source
+                self.assertEqual(
+                    (next_source <= 1 and next_source <= 1),
+                    (first_target <= 0 and second_target <= 1),
+                )
+
     def test_overflow_is_absorbing_in_oracle(self):
         self.assertEqual(o.transition(2,(0,),1),2)
         self.assertEqual(o.transition(0,(1,1,0),1),2)
@@ -373,6 +433,47 @@ class CanonicalExpansionTests(unittest.TestCase):
         self.assertEqual(final_q, q)
         with self.assertRaises(ValueError): ex.canonical_expansion(source, machine)
         with self.assertRaises(ValueError): ex.canonical_expansion(source, machine, (0, 0, 0, 2))
+
+    def test_parallel_length_one_chains_keep_edge_identity(self):
+        source = ex.TraceSystem(1, 0, (
+            ex.Edge(0, 0, 0, 7),
+            ex.Edge(0, 0, 1, 7),
+        ))
+        machine = tr.morphism((0,), (0,))
+        expanded = ex.canonical_expansion(source, machine)
+        first = ex.expand_target_edge_path(expanded, source, machine, (0,))
+        second = ex.expand_target_edge_path(expanded, source, machine, (1,))
+        self.assertNotEqual(first, second)
+        self.assertEqual(len(first), 1)
+        self.assertEqual(len(second), 1)
+        self.assertEqual(expanded.system.edges[first[0]], expanded.system.edges[second[0]])
+        self.assertEqual(ex.decompose_target_edge_path(expanded, first), (0,))
+        self.assertEqual(ex.decompose_target_edge_path(expanded, second), (1,))
+        self.assertEqual(len(expanded.system.outgoing(expanded.system.initial)), 2)
+
+    def test_parallel_shared_labels_long_short_roundtrip(self):
+        source = ex.TraceSystem(1, 0, (
+            ex.Edge(0, 0, 1, 7),
+            ex.Edge(0, 0, 1, 7),
+        ))
+        machine = tr.Transducer(((
+            tr.Transition(0, (0,)),
+            tr.Transition(0, (1,)),
+            tr.Transition(0, (1, 1, 1)),
+        ),), input_resets=(0, 1, 1))
+        symbols = (1, 2)
+        expanded = ex.canonical_expansion(source, machine, symbols)
+        path = (0, 1, 0)
+        target_ids = ex.expand_target_edge_path(
+            expanded, source, machine, path, symbols)
+        self.assertEqual(ex.decompose_target_edge_path(expanded, target_ids), path)
+        resets = tuple(expanded.system.edges[i].reset for i in target_ids)
+        lows = tuple(expanded.system.edges[i].low for i in target_ids)
+        self.assertEqual(resets, (1, 1, 1, 1, 1))
+        self.assertEqual(ex.erase(lows), (7, 7, 7))
+        long_chain = expanded.chain_edges[machine.initial, 1]
+        with self.assertRaises(ValueError):
+            ex.decompose_target_edge_path(expanded, long_chain[:-1])
 
     def test_monitor_viability_agrees_under_exact_contract(self):
         source = self.system()

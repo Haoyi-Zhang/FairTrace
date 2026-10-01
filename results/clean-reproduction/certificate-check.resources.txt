@@ -1,18 +1,18 @@
 	Command being timed: "python3 certificates.py results/certificates/m017-b0.json"
-	User time (seconds): 0.91
-	System time (seconds): 0.05
-	Percent of CPU this job got: 174%
-	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.55
+	User time (seconds): 0.86
+	System time (seconds): 0.07
+	Percent of CPU this job got: 177%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.53
 	Average shared text size (kbytes): 0
 	Average unshared data size (kbytes): 0
 	Average stack size (kbytes): 0
 	Average total size (kbytes): 0
-	Maximum resident set size (kbytes): 92972
+	Maximum resident set size (kbytes): 92968
 	Average resident set size (kbytes): 0
 	Major (requiring I/O) page faults: 0
 	Minor (reclaiming a frame) page faults: 24916
-	Voluntary context switches: 13
-	Involuntary context switches: 30
+	Voluntary context switches: 12
+	Involuntary context switches: 58
 	Swaps: 0
 	File system inputs: 0
 	File system outputs: 8

@@ -1,6 +1,6 @@
 {
   "address_space_limit_bytes": 3221225472,
-  "cpu_seconds_sum": 73.446018995,
+  "cpu_seconds_sum": 72.586790086,
   "files": [
     "annotated-composition-resources.json",
     "annotated-expansions-resources.json",
@@ -25,8 +25,8 @@
     "regular-one-bit-resources.json",
     "saturation-resources.json"
   ],
-  "maximum_stage_peak_rss_kib": 104736,
+  "maximum_stage_peak_rss_kib": 104752,
   "stages": 22,
-  "wall_seconds_sum": 73.47878336999997,
+  "wall_seconds_sum": 72.59287028400058,
   "workers_max": 1
 }

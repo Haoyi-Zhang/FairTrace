@@ -7,7 +7,7 @@ RMTCQO+LibertineMathMI               Type 1            Builtin          yes yes 
 RDGOCR+txsys                         Type 1            Builtin          yes yes yes    309  0
 FRCIWY+LinLibertineT                 Type 1            Custom           yes yes yes    310  0
 ACQTTC+LibertineMathRM               Type 1            Builtin          yes yes yes    311  0
-CLZEFE+LibertineMathMI7              Type 1            Builtin          yes yes yes    318  0
+GIUJPE+LibertineMathMI7              Type 1            Builtin          yes yes yes    318  0
 FWJXYU+LinLibertineTI                Type 1            Custom           yes yes yes    319  0
 UZJQXT+txmiaX                        Type 1            Builtin          yes yes yes    337  0
 QPUAPU+txsym                         Type 1            Builtin          yes yes yes    338  0
@@ -18,4 +18,4 @@ FRCIWY+LinLibertineT                 Type 1            Custom           yes yes 
 PFWBEG+LinLibertineTZ                Type 1            Custom           yes yes yes    358  0
 GDEHJG+LinLibertineTB                Type 1            Custom           yes yes yes    373  0
 YPAJFC+LibertineMathMI5              Type 1            Builtin          yes yes yes    382  0
-HBVCUL+LinBiolinumTI                 Type 1            Custom           yes yes yes    480  0
+HBVCUL+LinBiolinumTI                 Type 1            Custom           yes yes yes    481  0

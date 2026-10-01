@@ -350,6 +350,9 @@ def regular_composition(out: Path, write_csv):
                     _, middle = first.run(word)
                     _, expected = second.run(middle)
                     _, actual = composed.run(word)
+                    # The public composition API exposes a fresh reachable-pair
+                    # numbering but not the pair represented by each state id.
+                    # This campaign therefore checks output extensionality only.
                     assert actual == expected
                     word_checks += 1
             local_candidates = local_composed = 0
@@ -393,6 +396,7 @@ def regular_composition(out: Path, write_csv):
         'feasible_second_contracts': second_exact,
         'exact_composite_contracts': composed_exact,
         'finite_word_extensional_checks': word_checks,
+        'comparison_scope': 'emitted output words only; final control-state ids are not compared',
         'maximum_oracle_vertices': peak,
         'mismatches': 0,
     }
@@ -413,6 +417,8 @@ def annotated_composition(out: Path, write_csv):
                     _, middle = first.run(word)
                     _, expected = second.run(middle)
                     _, actual = composed.run(word)
+                    # Output equality is asserted; returned control-state ids
+                    # are intentionally outside this experimental claim.
                     assert actual == expected
                     word_checks += 1
             local_candidates = local_composed = 0
@@ -457,6 +463,7 @@ def annotated_composition(out: Path, write_csv):
         'feasible_second_contracts': second_exact,
         'exact_composite_contracts': composed_exact,
         'finite_word_extensional_checks': word_checks,
+        'comparison_scope': 'emitted output words only; final control-state ids are not compared',
         'maximum_oracle_vertices': peak,
         'mismatches': 0,
     }
@@ -501,21 +508,22 @@ def canonical_expansions(out: Path, write_csv):
                 resets, lows, final_q = ex.expand_finite_path(source, machine, path)
                 # Independently concatenate the selected chains and inspect the
                 # target edges, rather than reusing expand_finite_path's output.
-                q = machine.initial; target_resets = []; target_lows = []
+                q = machine.initial; target_resets = []; target_lows = []; target_ids = []
                 for edge_id in path:
-                    chain = expanded.chains[q, edge_id]
                     source_edge = source.edges[edge_id]
                     transition = machine.step(q, source_edge.reset)
-                    for left, right in zip(chain, chain[1:]):
-                        matches = [edge for _, edge in expanded.system.outgoing(left)
-                                   if edge.target == right]
-                        assert len(matches) == 1
-                        target_resets.append(matches[0].reset)
-                        target_lows.append(matches[0].low)
+                    chain_ids = expanded.chain_edges[q, edge_id]
+                    for position, target_edge_id in enumerate(chain_ids):
+                        target_edge = expanded.system.edges[target_edge_id]
+                        assert expanded.edge_owners[target_edge_id] == (q, edge_id, position)
+                        target_ids.append(target_edge_id)
+                        target_resets.append(target_edge.reset)
+                        target_lows.append(target_edge.low)
                     q = transition.next_state
                 assert tuple(target_resets) == resets
                 assert ex.erase(tuple(target_lows)) == ex.erase(lows)
                 assert ex.erase(lows) == tuple(source.edges[i].low for i in path)
+                assert ex.decompose_target_edge_path(expanded, tuple(target_ids)) == path
                 assert q == final_q
                 local_paths += 1; paths_checked += 1
                 labels_checked += len(path)
@@ -576,25 +584,27 @@ def annotated_expansions(out: Path, write_csv):
             local_paths = 0
             for path in _paths(source, 3):
                 resets, lows, final_q = ex.expand_finite_path(source, machine, path, symbols)
-                q = machine.initial; target_resets = []; target_lows = []
+                q = machine.initial; target_resets = []; target_lows = []; target_ids = []
                 for edge_id in path:
-                    chain = expanded.chains[q, edge_id]
                     transition = machine.step(q, symbols[edge_id])
-                    for position, (left, right, bit) in enumerate(
-                            zip(chain, chain[1:], transition.output)):
+                    chain_ids = expanded.chain_edges[q, edge_id]
+                    assert len(chain_ids) == len(transition.output)
+                    for position, (target_edge_id, bit) in enumerate(
+                            zip(chain_ids, transition.output)):
                         expected_low = (source.edges[edge_id].low
                                         if position == len(transition.output) - 1
                                         else ex.ERASE)
-                        matches = [edge for _, edge in expanded.system.outgoing(left)
-                                   if edge.target == right and edge.reset == bit
-                                   and edge.low == expected_low]
-                        assert len(matches) == 1
-                        target_resets.append(matches[0].reset)
-                        target_lows.append(matches[0].low)
+                        target_edge = expanded.system.edges[target_edge_id]
+                        assert expanded.edge_owners[target_edge_id] == (q, edge_id, position)
+                        assert target_edge.reset == bit and target_edge.low == expected_low
+                        target_ids.append(target_edge_id)
+                        target_resets.append(target_edge.reset)
+                        target_lows.append(target_edge.low)
                     q = transition.next_state
                 assert tuple(target_resets) == resets
                 assert ex.erase(tuple(target_lows)) == ex.erase(lows)
                 assert ex.erase(lows) == tuple(source.edges[i].low for i in path)
+                assert ex.decompose_target_edge_path(expanded, tuple(target_ids)) == path
                 assert q == final_q
                 local_paths += 1; paths_checked += 1; labels_checked += len(path)
             local_contracts = local_viability = 0

@@ -3,6 +3,8 @@ test_edge_class_specific_three_symbol_expansion (test_artifact.CanonicalExpansio
 test_expansion_chains_and_deterministic_interiors (test_artifact.CanonicalExpansionTests.test_expansion_chains_and_deterministic_interiors) ... ok
 test_finite_path_reset_and_low_projection (test_artifact.CanonicalExpansionTests.test_finite_path_reset_and_low_projection) ... ok
 test_monitor_viability_agrees_under_exact_contract (test_artifact.CanonicalExpansionTests.test_monitor_viability_agrees_under_exact_contract) ... ok
+test_parallel_length_one_chains_keep_edge_identity (test_artifact.CanonicalExpansionTests.test_parallel_length_one_chains_keep_edge_identity) ... ok
+test_parallel_shared_labels_long_short_roundtrip (test_artifact.CanonicalExpansionTests.test_parallel_shared_labels_long_short_roundtrip) ... ok
 test_dead_to_live_edge_must_not_be_omitted (test_artifact.CertificateTests.test_dead_to_live_edge_must_not_be_omitted) ... ok
 test_duplicate_json_fields (test_artifact.CertificateTests.test_duplicate_json_fields) ... ok
 test_empty_graph (test_artifact.CertificateTests.test_empty_graph) ... ok
@@ -26,7 +28,9 @@ test_one_zero_profile_has_no_internal_pair (test_artifact.MorphismTests.test_one
 test_overflow_is_absorbing_in_oracle (test_artifact.MorphismTests.test_overflow_is_absorbing_in_oracle) ... ok
 test_public_quantifier_counterexample (test_artifact.MorphismTests.test_public_quantifier_counterexample) ... ok
 test_suffix_requires_carried_debt (test_artifact.MorphismTests.test_suffix_requires_carried_debt) ... ok
+test_true_invalid_floor_includes_baseline_demands (test_artifact.MorphismTests.test_true_invalid_floor_includes_baseline_demands) ... ok
 test_two_reset_small_bound_exception (test_artifact.MorphismTests.test_two_reset_small_bound_exception) ... ok
+test_vector_exactness_need_not_be_coordinatewise_necessary (test_artifact.MorphismTests.test_vector_exactness_need_not_be_coordinatewise_necessary) ... ok
 test_wrong_initial_debt_changes_language (test_artifact.MorphismTests.test_wrong_initial_debt_changes_language) ... ok
 test_zero_bound_resetful_exception (test_artifact.MorphismTests.test_zero_bound_resetful_exception) ... ok
 test_complete_decision_packets (test_artifact.RegularContractTests.test_complete_decision_packets) ... ok
@@ -41,6 +45,6 @@ test_transducer_composition_is_extensional (test_artifact.RegularContractTests.t
 test_zero_free_safe_cycle_has_infinite_ceiling (test_artifact.RegularContractTests.test_zero_free_safe_cycle_has_infinite_ceiling) ... ok
 
 ----------------------------------------------------------------------
-Ran 41 tests in 0.343s
+Ran 45 tests in 0.346s
 
 OK

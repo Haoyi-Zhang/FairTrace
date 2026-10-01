@@ -15,7 +15,7 @@ python3 check_reproduction.py results reproduced
 python3 certificates.py results/certificates/m017-b0.json
 ```
 
-The first command runs 41 tests, including a regression showing that both negative witness directions can hold for one tuple. The second executes 22 deterministic stages in one process and writes a fresh directory. The third compares every deterministic CSV, JSON summary, exact input, and retained certificate packet; machine-dependent CPU, wall-time, and peak-RSS records are intentionally excluded. The final command exercises the independent command-line parser and local live-set checker on one retained graph certificate.
+The first command runs 45 tests, including regressions for overlapping negative directions, semantic invalid-floor thresholds, vector-coordinate masking, and parallel expansion chains with identical structural edges. The second executes 22 deterministic stages in one process and writes a fresh directory. The third compares every deterministic CSV, JSON summary, exact input, and retained certificate packet; machine-dependent CPU, wall-time, and peak-RSS records are intentionally excluded. The final command exercises the independent command-line parser and local live-set checker on one retained graph certificate.
 
 The campaign can be resumed one stage at a time:
 
@@ -37,7 +37,7 @@ canonical-expansions, annotated-expansions
 
 A stage-only directory is not a complete comparison target. Do not overwrite `results/` during ordinary reproduction.
 
-The retained clean-copy replay is recorded in `results/clean-reproduction/`. All 41 tests and all 22 stages were rerun from a clean copy using the documented stage interface; the final summary contains every stage exactly once, and the comparator matched 55 deterministic scientific files with zero mismatches. The paper was separately rebuilt from source-only input to 50 pages with all fonts embedded and an empty critical-warning scan.
+The retained clean-copy replay is recorded in `results/clean-reproduction/`. All 45 tests and all 22 stages were rerun from a clean copy using the documented stage interface; the final summary contains every stage exactly once, and the comparator matched 60 deterministic scientific files with zero mismatches. The paper was separately rebuilt from source-only input to 50 pages with all fonts embedded and an empty critical-warning scan.
 
 ## Main retained results
 
@@ -46,12 +46,12 @@ The retained clean-copy replay is recorded in `results/clean-reproduction/`. All
 | Stateful endpoint algorithms vs. independent fixed-bound omega-language oracle | 576 machines; 23,040 parameter tuples; 407,040 target bounds | 0 disagreements; 459 exact bounds; 400 feasible intervals; 7,200 infinite safe ceilings |
 | Positive exact-contract certificates | 3,456 candidates | 150 generated and accepted; 374 mutated packets rejected |
 | Complete fixed-bound decision packets | 29,680 packets | 130 exact; 6,061 forward packets; 23,489 reverse-by-precedence packets; 29,807 mutations rejected; 0 disagreements |
-| Stateful transducer composition | 512 ordered pairs across binary and three-symbol families | 584 exact composites; 47,104 finite-word extensional checks; 0 disagreements |
+| Stateful transducer composition | 512 ordered pairs across binary and three-symbol families | 584 exact composites; 47,104 emitted-word checks; 0 disagreements |
 | Canonical reactive microstep expansion | 7,200 expanded systems | 262,176 finite paths; 814,592 source labels; 16,650 exact-contract viability checks; 0 disagreements |
-| Stateless closed-form classification | 449,820 fixed configurations | 2,232 exact equalities; 0 disagreements with both interval synthesis and product oracle |
+| Stateless closed-form classification and semantic floor | 449,820 fixed configurations; 1,980 direct floor instances | 2,232 exact equalities; 3,960 `R-1`/`R` reflection checks and 1,980 lasso witnesses; 0 disagreements |
 | Public-budget families | 360 configurations | 167 feasible; 193 infeasible |
 | Auxiliary monitor and graph semantics | 21,844 event-word checks; 900 monitored products; 216,000 Boolean property answers | 0 disagreements |
-| Unit tests | 41 tests, including all 531 directed graphs on at most three vertices and an overlapping-direction decision regression | all pass |
+| Unit tests | 45 tests, including all 531 directed graphs on at most three vertices plus endpoint, vector-mask, and parallel-edge regressions | all pass |
 
 The stateful total combines three separately reported families:
 
@@ -59,9 +59,12 @@ The stateful total combines three separately reported families:
 - all 256 assignments of blocks in `{0,1,01,10}` on a fixed nontrivial two-state graph;
 - all 64 one-bit assignments on a fixed three-symbol graph with annotations `(0,1,1)`.
 
-The three-symbol family is important: two source symbols can have the same fairness annotation while selecting different transducer edges and changing later control. It therefore cannot be reduced to a morphism on the reset bit alone.
+The three-symbol family is important: two source symbols can have the same fairness annotation while selecting different input classes and emitting different blocks. In the worked two-state machine they have the same next state at each control state, so category replacement does not change the control trajectory; the family still cannot be reduced to a morphism on the reset bit alone.
 
-`results/campaign-resources.json` records the retained 22-stage campaign: about 73.38 CPU seconds, about 73.41 wall seconds, one worker, a 3 GiB address-space ceiling, and maximum retained peak RSS of 104,872 KiB in the execution environment. These numbers are resource accounting, not performance claims.
+
+The direct floor evidence is retained in `results/stateless-floor-0.csv` through `results/stateless-floor-4.csv`. Each row records the formula value, the independent fixed-bound reflection answers at `R-1` and `R`, and a reverse lasso accepted by the packet checker.
+
+`results/campaign-resources.json` records the retained 22-stage campaign: 73.176 CPU seconds, 73.186 wall seconds, one worker, a 3 GiB address-space ceiling, and maximum retained peak RSS of 104,876 KiB in the execution environment. These numbers are resource accounting, not performance claims.
 
 ## Repository map
 
@@ -78,7 +81,7 @@ The three-symbol family is important: two source symbols can have the same fairn
 | `fairness.py`, `reference.py`, `certificates.py` | Debt monitors, finite reactive systems, graph queries, bisimulation, saturation, and generic live-set certificates. |
 | `reproduce.py` | One-worker 22-stage campaign driver with a 3 GiB address-space limit. |
 | `check_reproduction.py` | Semantic result comparator; resource files are excluded. |
-| `test_artifact.py` | Forty-one unit, boundary, parser, relabeling, oracle, composition, certificate, decision-overlap, and expansion tests. |
+| `test_artifact.py` | Forty-five unit, boundary, parser, relabeling, oracle, composition, certificate, endpoint, vector-mask, and expansion tests. |
 | `theory.md` | Standalone definitions, theorem statements, proof architecture, worked example, and scope. |
 | `literature.md`, `references.bib` | Closest-work comparison and bibliographic metadata used by the project. |
 | `claim_evidence_ledger.csv` | Material-claim to theorem/code/result mapping and maturity. |
@@ -119,5 +122,7 @@ This makes the floor a finite monotone search and yields finite lasso evidence.
 - Finite enumeration validates the distributed implementation on declared domains. It is not a proof of the general theorems and not practical workload evidence.
 - The certificate checkers are handwritten Python, not extracted from Rocq, Lean, Isabelle, or another proof assistant.
 - No production compiler correspondence is implemented. Applying the theorem requires a separate two-sided run relation and justification of source annotations, target blocks, low labels, and viability.
+
+No experiment or obligation named `F3` is defined in this repository, and no unrun `F3` result is claimed.
 
 Substantive generative-AI assistance was used in research design, literature analysis, arguments, implementation, testing, finite experiments, interpretation, writing, and typesetting. The work has not received independent peer review or proof-assistant verification. Human authors must review the complete packet, accept accountability, and satisfy current publisher disclosure and authorship policies before external use. No public repository URL is asserted.

@@ -117,6 +117,13 @@ H = t + (((B + 2) * |Q|) + 2) * L.
 
 This makes the floor a finite monotone search and yields finite lasso evidence.
 
+The current Ubuntu run is retained under `results/current/`. All 48 tests and
+22 stages pass, and all 60 deterministic scientific files match the canonical
+records. Stage wall times total 102.512148 seconds, CPU times 102.486667 seconds,
+and process-lifetime peak RSS is 27,908 KiB. These are separate measurements
+from the historical host run. Large current CSV/log files are losslessly gzip
+compressed; decompress a copy for tools expecting the original filename.
+
 ## Interpretation and trust boundary
 
 - The results quantify over infinite paths, not adversarial scheduler strategies. Strategy transfer would require a game model and observable-history relation.

@@ -176,4 +176,4 @@ compressed; decompress a copy for tools expecting the original filename.
 - The certificate checkers are Python programs, not extracted from a proof assistant.
 - No production compiler correspondence is implemented. Applying the theorem requires a separate two-sided run relation and justification of source annotations, target blocks, low labels, and viability.
 
-The work has not received independent peer review or proof-assistant verification. The source repository is [available here](https://github.com/Haoyi-Zhang/FairTrace-code).
+The work has not received independent peer review or proof-assistant verification. The source repository is [available here](https://github.com/Haoyi-Zhang/FairTrace).

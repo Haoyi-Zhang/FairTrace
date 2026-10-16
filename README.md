@@ -43,7 +43,7 @@ A stage-only directory is not a complete comparison target. Do not overwrite `re
 
 The retained clean-copy replay is recorded in `results/clean-reproduction/`. All 45 tests and all 22 stages were rerun from a clean copy using the documented stage interface; the final summary contains every stage exactly once, and the comparator matched 60 deterministic scientific files with zero mismatches. The paper was separately rebuilt from source-only input to 50 pages with all fonts embedded and an empty critical-warning scan.
 
-A subsequent local Windows/Python 3.12.14 check passed the current 48 tests and replayed the same 22 scientific stage functions, matching all 60 deterministic files. Because Windows lacks the driver's Unix `resource` module, a separate one-worker harness invoked those functions without the Linux driver entry point; it imposed a 600-second timeout and a 3 GiB process committed-memory limit. This replay took 83.451 wall seconds and 80.953 CPU seconds with a 37,462,016-byte process-lifetime peak working set. These Windows measurements are not the retained Linux address-space/RSS measurements or a performance comparison. The edited manuscript source has not been rebuilt in this check.
+A subsequent local Windows/Python 3.12.14 check passed the 48-method baseline and replayed the same 22 scientific stage functions, matching all 60 deterministic files. Because Windows lacks the driver's Unix `resource` module, a separate one-worker harness invoked those functions without the Linux driver entry point; it imposed a 600-second timeout and a 3 GiB process committed-memory limit. This replay took 83.451 wall seconds and 80.953 CPU seconds with a 37,462,016-byte process-lifetime peak working set. These Windows measurements are not the retained Linux address-space/RSS measurements or a performance comparison. That replay did not rebuild the manuscript.
 
 ## Main retained results
 
@@ -57,7 +57,7 @@ A subsequent local Windows/Python 3.12.14 check passed the current 48 tests and 
 | Stateless closed-form classification and semantic floor | 449,820 fixed configurations; 1,980 direct floor instances | 2,232 exact equalities; 3,960 `R-1`/`R` reflection checks and 1,980 lasso witnesses; 0 disagreements |
 | Public-budget families | 360 configurations | 167 feasible; 193 infeasible |
 | Auxiliary monitor and graph semantics | 21,844 event-word checks; 900 monitored products; 216,000 Boolean property answers | 0 disagreements |
-| Current unit tests | 48 tests, including all 531 directed graphs on at most three vertices plus endpoint, vector-mask, typed chain-ID, and silent-continuation regressions | all pass in the local replay; retained clean-copy record has 45 tests |
+| Current unit suite | 62 methods: 48 baseline, six profile-reuse, and eight graph/workflow regressions; includes all 531 directed graphs on at most three vertices | CI executes all three modules; historical clean-copy and Ubuntu records retain their 45/48-method cohorts |
 
 The stateful total combines three separately reported families:
 
@@ -159,7 +159,7 @@ H = t + (((B + 2) * |Q|) + 2) * L.
 
 This makes the floor a finite monotone search and yields finite lasso evidence.
 
-The current Ubuntu run is retained under `results/current/`. All 48 tests and
+The retained Ubuntu baseline is under `results/current/`. All 48 tests and
 22 stages pass, and all 60 deterministic scientific files match the canonical
 records. Stage wall times total 102.512148 seconds, CPU times 102.486667 seconds,
 and process-lifetime peak RSS is 27,908 KiB. These are separate measurements
